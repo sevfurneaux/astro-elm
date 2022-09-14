@@ -26,7 +26,7 @@ main =
 
 
 type alias Model =
-    Result Error { message : String }
+    Result Error { message : String, counter : Int }
 
 
 init : Value -> ( Model, Cmd Msg )
@@ -38,6 +38,7 @@ init flags =
                     (Decode.map
                         (\message ->
                             { message = message
+                            , counter = 0
                             }
                         )
                         (Decode.field "message" Decode.string)
@@ -53,12 +54,35 @@ init flags =
 
 
 type Msg
-    = NoOp
+    = Increment
+    | Decrement
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case model of
+        Ok params ->
+            case msg of
+                Increment ->
+                    ( Ok { params | counter = params.counter + 1 }
+                    , Cmd.none
+                    )
+
+                Decrement ->
+                    ( Ok
+                        { params
+                            | counter =
+                                if params.counter > 0 then
+                                    params.counter - 1
+
+                                else
+                                    0
+                        }
+                    , Cmd.none
+                    )
+
+        Err _ ->
+            ( model, Cmd.none )
 
 
 
@@ -77,8 +101,24 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     case model of
-        Ok { message } ->
-            text message
+        Ok { message, counter } ->
+            div []
+                [ h1 [] [ text message ]
+                , h2 [] [ text ("Counter: " ++ String.fromInt counter) ]
+                , button [ onClick Increment ]
+                    [ text "Increment" ]
+                , button
+                    [ onClick Decrement
+                    , disabled
+                        (if counter == 0 then
+                            True
+
+                         else
+                            False
+                        )
+                    ]
+                    [ text "Decrement" ]
+                ]
 
         Err error ->
             text (error |> Decode.errorToString)
