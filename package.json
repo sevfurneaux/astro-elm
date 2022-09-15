@@ -14,6 +14,7 @@
     "elm-format": "^0.8.5"
   },
   "dependencies": {
+    "elm": "^0.19.1-5",
     "vite-plugin-elm": "^2.7.2"
   }
 }
