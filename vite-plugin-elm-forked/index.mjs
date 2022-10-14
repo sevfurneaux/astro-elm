@@ -54,6 +54,16 @@ export const plugin = (opts) => {
         return modules;
       }
     },
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url.endsWith('.elm')) {
+          req.url += '?import'
+          res.setHeader('Content-Type', 'application/javascript')
+        }
+    
+        next()
+      })
+    },
     async load(id) {
       const { valid, pathname, withParams } = parseImportId(id);
       if (!valid) return;
