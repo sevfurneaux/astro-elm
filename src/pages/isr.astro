@@ -1,0 +1,24 @@
+---
+const dateString = new Date().toUTCString();
+const params = Astro.params;
+const url = Astro.url;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>ISR Test</title>
+  </head>
+
+  <body
+    style="display: flex; font-family:system-ui; align-items: center; justify-content: center; height: 90vh; text-align: center; background: #337; color:#ddd;"
+  >
+    <main>
+      <h1>👋 Freshly rendered for you</h1><br />
+      on {dateString}<br /><br />
+      requested with {JSON.stringify(params)}<br />
+      {url}
+    </main>
+  </body>
+</html>
