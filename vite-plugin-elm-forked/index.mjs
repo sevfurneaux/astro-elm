@@ -12,11 +12,13 @@ const viteProjectPath = (dependency) =>
 
 const parseImportId = (id) => {
   const parsedId = new URL(id, "file://");
+  const fileName = parsedId.pathname.split("/").filter(Boolean).pop();
   const pathname = parsedId.pathname;
-  const valid = pathname.endsWith(".elm");
+  const valid = fileName && pathname.endsWith(".elm");
   const withParams = parsedId.searchParams.getAll("with");
 
   return {
+    fileName,
     valid,
     pathname,
     withParams,
@@ -56,16 +58,16 @@ export const plugin = (opts) => {
     },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (req.url.endsWith('.elm')) {
-          req.url += '?import'
-          res.setHeader('Content-Type', 'application/javascript')
+        if (req.url.endsWith(".elm")) {
+          req.url += "?import";
+          res.setHeader("Content-Type", "application/javascript");
         }
-    
-        next()
-      })
+
+        next();
+      });
     },
     async load(id) {
-      const { valid, pathname, withParams } = parseImportId(id);
+      const { valid, fileName, pathname, withParams } = parseImportId(id);
       if (!valid) return;
 
       const accompanies = await (() => {
@@ -106,6 +108,7 @@ export const plugin = (opts) => {
           verbose: isBuild,
           debug: debug ?? !isBuild,
         });
+        const moduleName = fileName.replace(".elm", "");
         compiled = compiled.replace(
           "'init':",
           `'vNode': (args) => {
@@ -114,9 +117,9 @@ export const plugin = (opts) => {
               $elm$json$Json$Decode$value,
               _Json_wrap(args)
               );
-              var initPair = $author$project$Main$init(result.a);
+              var initPair = $author$project$${moduleName}$init(result.a);
               var model = initPair.a;
-              return $author$project$Main$view(model);
+              return $author$project$${moduleName}$view(model);
           }, 'init':
           `
         );
