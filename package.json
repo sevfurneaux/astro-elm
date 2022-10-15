@@ -10,10 +10,11 @@
     "astro": "astro"
   },
   "devDependencies": {
-    "astro": "^1.0.8",
+    "astro": "^1.5.0",
     "elm-format": "^0.8.5"
   },
   "dependencies": {
+    "@astrojs/vercel": "^2.2.0",
     "elm": "^0.19.1-5",
     "vite-plugin-elm": "^2.7.2"
   }

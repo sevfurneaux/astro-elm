@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import elmPlugin from "./vite-plugin-elm-forked/index.mjs";
+import vercel from '@astrojs/vercel/serverless';
 
 const elm = {
   name: "@astrojs/elm",
@@ -37,5 +38,7 @@ function getViteConfiguration({
 }
 
 export default defineConfig({
+  output: 'server',
   integrations: [elm],
+  adapter: vercel(),
 });
